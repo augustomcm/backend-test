@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Investment;
 use App\Models\Owner;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -52,6 +53,22 @@ class InvestmentTest extends TestCase
                 'amount',
                 'creation_date'
             ]
+        ]);
+    }
+
+    public function test_view_of_an_investment()
+    {
+        $investment = Investment::factory()->create([
+            'amount' => 1000.00,
+            'creation_date' => today()->subMonths(12)
+        ]);
+
+        $response = $this->getJson("/api/investments/{$investment->id}");
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'initial_amount' => 1000.00,
+            'expected_balance' => 1064.22
         ]);
     }
 }

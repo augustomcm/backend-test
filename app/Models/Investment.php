@@ -2,21 +2,25 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Investment extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'amount',
         'creation_date'
     ];
 
-    public $timestamps = false;
+    protected $casts = [
+        'amount' => 'double'
+    ];
 
-    protected function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-    }
+    protected $dates = ['creation_date'];
+
+    public $timestamps = false;
 
     public function setAmountAttribute($value)
     {
@@ -32,6 +36,16 @@ class Investment extends Model
             throw new \InvalidArgumentException("The creation date of an investment must be today or a date in the past");
 
         $this->attributes['creation_date'] = $value;
+    }
+
+    public function getCreationDate()
+    {
+        return $this->creation_date;
+    }
+
+    public function getAmount()
+    {
+        return $this->amount;
     }
 
     public function owner()
