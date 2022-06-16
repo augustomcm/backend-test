@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -22,7 +23,7 @@ class Handler extends ExceptionHandler
      * @var array<int, class-string<\Throwable>>
      */
     protected $dontReport = [
-        //
+        \InvalidArgumentException::class
     ];
 
     /**
@@ -43,8 +44,20 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
+        $this->renderable(function (\InvalidArgumentException $e, $request) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 400);
+        });
+
+        $this->renderable(function (\RuntimeException $e, $request) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 406);
+        });
+
         $this->reportable(function (Throwable $e) {
-            //
+            Log::critical($e->getMessage());
         });
     }
 }
