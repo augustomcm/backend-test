@@ -85,7 +85,7 @@ class WithdrawalServiceTest extends TestCase
 
     public function test_do_not_withdraw_an_investment_already_withdrawn()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(\DomainException::class);
 
         $investment = Investment::factory()->make([
             'amount' => 1000.00,

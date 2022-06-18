@@ -24,7 +24,8 @@ class Handler extends ExceptionHandler
      * @var array<int, class-string<\Throwable>>
      */
     protected $dontReport = [
-        \InvalidArgumentException::class
+        \InvalidArgumentException::class,
+        \DomainException::class
     ];
 
     /**
@@ -46,6 +47,12 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->renderable(function (\InvalidArgumentException $e, $request) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 400);
+        });
+
+        $this->renderable(function (\DomainException $e, $request) {
             return response()->json([
                 'message' => $e->getMessage()
             ], 400);

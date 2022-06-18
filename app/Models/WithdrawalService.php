@@ -6,11 +6,7 @@ class WithdrawalService
 {
     public function withdrawInvestment(Investment $investment, \DateTime $withdrawAt) : float
     {
-        if($investment->hasBeenWithdrawn()) {
-            throw new \InvalidArgumentException("The investment has already been withdrawn");
-        }
 
-        $investment->setWithdrawalDate($withdrawAt);
 
         $expectedBalance = $investment->calculateExpectedBalance();
         $gains = $investment->calculateGains();
@@ -19,6 +15,7 @@ class WithdrawalService
 
         $total = number_format($expectedBalance - $taxation, 2, '.', '');
 
+        $investment->setWithdrawalDate($withdrawAt);
         $investment->save();
 
         return (float) $total;

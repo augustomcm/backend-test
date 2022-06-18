@@ -54,6 +54,19 @@ class InvestmentTest extends TestCase
         $this->assertSame($expectedGain, $total);
     }
 
+    public function test_do_not_calculate_expected_balance_already_withdrawn()
+    {
+        $this->expectException(\DomainException::class);
+
+        $investment = Investment::factory()->make([
+            'amount' => 1000.00,
+            'creation_date' => today()->subMonths(12),
+            'withdrawal_at' => today()
+        ]);
+
+        $investment->calculateExpectedBalance();
+    }
+
     public function test_calculate_gain()
     {
         $owner = Owner::factory()->make();

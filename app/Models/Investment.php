@@ -58,6 +58,10 @@ class Investment extends Model
 
     public function calculateExpectedBalance(): float
     {
+        if($this->hasBeenWithdrawn()) {
+            throw new \DomainException("This investment is no longer available");
+        }
+
         $quantityMonths = today()->diffInMonths($this->getCreationDate());
 
         $total = $this->getAmount() * pow(1 + self::MONTHLY_GAIN, $quantityMonths);
