@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Http\Resources\InvestmentResource;
 use App\Models\Investment;
 use App\Models\Owner;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class InvestmentTest extends TestCase
@@ -109,5 +109,21 @@ class InvestmentTest extends TestCase
                 'date',
             ]
         ]);
+    }
+
+    public function test_list_an_owners_investments()
+    {
+        $owner = Owner::factory()->create();
+        $investment = Investment::factory()->for($owner)->create();
+
+        Investment::factory(5)->create(); // investments from other owners
+
+        $response = $this->getJson("/api/investments?owner={$owner->id}");
+
+        $response
+            ->assertStatus(200)
+            ->assertJsonPath("data.0.id", $investment->id)
+            ->assertJsonCount(1, 'data')
+            ->assertResource(InvestmentResource::collection([$investment]));
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\InvestmentResource;
 use App\Models\GainCalculatingService;
 use App\Models\Investment;
 use App\Models\Owner;
@@ -12,6 +13,24 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class InvestmentController extends Controller
 {
+    public function index(Request $req)
+    {
+        try {
+            $query = $req->validate([
+                'owner' => 'required|numeric',
+                'per_page' => 'numeric|min:1'
+            ]);
+
+            $investments = Investment::where('owner_id', $query['owner'])
+                ->paginate($query['per_page'] ?? 10);
+
+            return InvestmentResource::collection($investments);
+
+        }catch (\Exception $ex) {
+            throw $ex;
+        }
+    }
+
     public function store(Request $req)
     {
         try {
