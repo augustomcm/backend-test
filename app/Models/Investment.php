@@ -13,14 +13,15 @@ class Investment extends Model
 
     protected $fillable = [
         'amount',
-        'creation_date'
+        'creation_date',
+        'withdrawal_at'
     ];
 
     protected $casts = [
         'amount' => 'double'
     ];
 
-    protected $dates = ['creation_date'];
+    protected $dates = ['creation_date', 'withdrawal_at'];
 
     public $timestamps = false;
 
@@ -63,6 +64,26 @@ class Investment extends Model
         $roundedTotal = number_format($total, 2, '.', '');
 
         return (float) $roundedTotal;
+    }
+
+    public function calculateGains(): float
+    {
+        $expectedBalance = $this->calculateExpectedBalance();
+        return number_format($expectedBalance - $this->getAmount(), 2, '.', '');
+    }
+
+    public function hasBeenWithdrawn(): bool
+    {
+        return !!$this->withdrawal_at;
+    }
+
+    public function setWithdrawalDate(\DateTime $date)
+    {
+        if($date < $this->getCreationDate() || $date > today()){
+            throw new \InvalidArgumentException("Withdrawals can't happen before the investment creation or the future");
+        }
+
+        $this->withdrawal_at = $date;
     }
 
     public static function make(Owner $owner, $amount, \DateTime $creationDate)

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\Owner::class, 'owner_id');
             $table->decimal('amount')->unsigned();
             $table->dateTime('creation_date');
+            $table->dateTime('withdrawal_at')->nullable();
         });
     }
 

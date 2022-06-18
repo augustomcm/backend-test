@@ -54,6 +54,26 @@ class InvestmentTest extends TestCase
         $this->assertSame($expectedGain, $total);
     }
 
+    public function test_calculate_gain()
+    {
+        $owner = Owner::factory()->make();
+        $investment = Investment::make($owner, 1000.00, today()->subMonths(6));
+
+        $gains = $investment->calculateGains();
+
+        $this->assertSame(31.61, $gains);
+    }
+
+    public function test_assign_withdrawal_date()
+    {
+        $owner = Owner::factory()->make();
+        $investment = Investment::make($owner, 1000.00, today()->subMonths(6));
+
+        $investment->setWithdrawalDate(today());
+
+        $this->assertTrue($investment->hasBeenWithdrawn());
+    }
+
     public function providerGain()
     {
         return [
