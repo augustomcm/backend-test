@@ -32,10 +32,10 @@ class InvestmentController extends Controller
         }
     }
 
-    public function show(Investment $investment, GainCalculatingService $gainCalculatingService)
+    public function show(Investment $investment)
     {
         try {
-            $expectedBalance = $gainCalculatingService->calculateAmount($investment);
+            $expectedBalance = $investment->calculateExpectedBalance();
 
             return response()->json([
                 'initial_amount' => $investment->getAmount(),

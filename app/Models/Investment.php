@@ -9,6 +9,8 @@ class Investment extends Model
 {
     use HasFactory;
 
+    const MONTHLY_GAIN = 0.0052;
+
     protected $fillable = [
         'amount',
         'creation_date'
@@ -51,6 +53,16 @@ class Investment extends Model
     public function owner()
     {
         return $this->belongsTo(Owner::class);
+    }
+
+    public function calculateExpectedBalance(): float
+    {
+        $quantityMonths = today()->diffInMonths($this->getCreationDate());
+
+        $total = $this->getAmount() * pow(1 + self::MONTHLY_GAIN, $quantityMonths);
+        $roundedTotal = number_format($total, 2, '.', '');
+
+        return (float) $roundedTotal;
     }
 
     public static function make(Owner $owner, $amount, \DateTime $creationDate)
