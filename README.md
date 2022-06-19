@@ -46,3 +46,9 @@ O Laravel possui uma espécie de wrapper que sob o capô executa o Docker (https
 ~~~bash
 ./vendor/bin/sail down
 ~~~
+
+## Documentação
+
+Após a aplicação inicilizada, basta acessar a uri abaixo:
+
+- http://localhost/api/documentation
