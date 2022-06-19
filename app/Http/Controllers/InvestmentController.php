@@ -46,7 +46,7 @@ class InvestmentController extends Controller
             $investment = Investment::make($owner, $data['amount'], new \DateTime($data['creation_date']));
             $investment->save();
 
-            return response()->json($investment, Response::HTTP_CREATED);
+            return response()->json(new InvestmentResource($investment), Response::HTTP_CREATED);
         }catch (\Exception $ex) {
             throw $ex;
         }
