@@ -4,14 +4,17 @@ namespace App\Models;
 
 class WithdrawalService
 {
+    protected $taxCalculation;
+
+    public function __construct(TaxCalculationService $taxCalculation)
+    {
+        $this->taxCalculation = $taxCalculation;
+    }
+
     public function withdrawInvestment(Investment $investment, \DateTime $withdrawAt) : float
     {
-
-
         $expectedBalance = $investment->calculateExpectedBalance();
-        $gains = $investment->calculateGains();
-        $tax = $this->factoryTax($investment->getCreationDate(), $withdrawAt);
-        $taxation = $tax * $gains;
+        $taxation = $this->taxCalculation->calculate($investment, $withdrawAt);
 
         $total = number_format($expectedBalance - $taxation, 2, '.', '');
 
@@ -19,17 +22,5 @@ class WithdrawalService
         $investment->save();
 
         return (float) $total;
-    }
-
-    private function factoryTax(\DateTime $creationInvestment, \DateTime $withdrawAt)
-    {
-        $years = $withdrawAt->diff($creationInvestment)->y;
-
-        if($years < 1)
-            return 0.225;
-        if($years >= 1 && $years < 2)
-            return 0.185;
-
-        return 0.15;
     }
 }

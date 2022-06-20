@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\Investment;
+use App\Models\TaxCalculationService;
 use App\Models\WithdrawalService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -18,7 +19,7 @@ class WithdrawalServiceTest extends TestCase
             'creation_date' => today()->subMonths(6)
         ]);
 
-        $withdrawalService = new WithdrawalService();
+        $withdrawalService = new WithdrawalService(new TaxCalculationService());
         $amount = $withdrawalService->withdrawInvestment($investment, today());
 
         $this->assertSame(1024.5, $amount);
@@ -32,7 +33,7 @@ class WithdrawalServiceTest extends TestCase
             'creation_date' => today()->subYear()
         ]);
 
-        $withdrawalService = new WithdrawalService();
+        $withdrawalService = new WithdrawalService(new TaxCalculationService());
         $amount = $withdrawalService->withdrawInvestment($investment, today());
 
         $this->assertSame(1052.34, $amount);
@@ -46,7 +47,7 @@ class WithdrawalServiceTest extends TestCase
             'creation_date' => today()->subYears(2)
         ]);
 
-        $withdrawalService = new WithdrawalService();
+        $withdrawalService = new WithdrawalService(new TaxCalculationService());
         $amount = $withdrawalService->withdrawInvestment($investment, today());
 
         $this->assertSame(1112.68, $amount);
@@ -64,7 +65,7 @@ class WithdrawalServiceTest extends TestCase
 
         $tomorrow = today()->addDay();
 
-        $withdrawalService = new WithdrawalService();
+        $withdrawalService = new WithdrawalService(new TaxCalculationService());
         $withdrawalService->withdrawInvestment($investment, $tomorrow);
     }
 
@@ -79,7 +80,7 @@ class WithdrawalServiceTest extends TestCase
 
         $yesterday = today()->subDay();
 
-        $withdrawalService = new WithdrawalService();
+        $withdrawalService = new WithdrawalService(new TaxCalculationService());
         $withdrawalService->withdrawInvestment($investment, $yesterday);
     }
 
@@ -93,7 +94,7 @@ class WithdrawalServiceTest extends TestCase
             'withdrawal_at' => today()
         ]);
 
-        $withdrawalService = new WithdrawalService();
+        $withdrawalService = new WithdrawalService(new TaxCalculationService());
         $withdrawalService->withdrawInvestment($investment, today());
     }
 
