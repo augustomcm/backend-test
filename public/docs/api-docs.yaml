@@ -1,0 +1,221 @@
+openapi: 3.0.1
+info:
+  title: API Investment
+  description: API for an application that stores and manages investments.
+  version: 0.0.1
+  contact:
+    name: Augusto Moreira
+    email: augustomoreira.dev@gmail.com
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+servers:
+- url: http://localhost/api
+  description: API Test
+
+paths:
+
+  /investments/{id}/withdraw:
+    put:
+      summary: Withdrawal of a investment
+      parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date
+      responses:
+        404:
+          $ref: "#/components/responses/404NotFound"
+        422:
+          $ref: "#/components/responses/422BadRequest"
+        400:
+          $ref: "#/components/responses/400BadRequest"
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  amount_withdrawn:
+                    type: number
+                    example: 1049.77
+
+  /investments:
+    post:
+      summary: Creation of an investment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                owner:
+                  type: integer
+                  example: 1
+                amount:
+                  type: number
+                  example: 1000
+                creation_date:
+                  type: string
+                  format: date
+      responses:
+        422:
+          $ref: "#/components/responses/422BadRequest"
+        201:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Investment"
+    get:
+      summary: "List of a person's investments"
+      parameters:
+      - name: owner
+        in: query
+        schema:
+          type: integer
+        required: true
+      - name: page
+        in: query
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        422:
+          $ref: "#/components/responses/422BadRequest"
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Investment"
+                  links:
+                    type: object
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                        minimum: 1
+                      from:
+                        type: integer
+                        minimum: 1
+                      last_page:
+                        type: integer
+                        minimum: 1
+                      links:
+                        type: array
+                        items:
+                          type: object
+                      path:
+                        type: integer
+                        minimum: 1
+                      per_page:
+                        type: integer
+                        minimum: 1
+                      to:
+                        type: integer
+                        minimum: 1
+                      total:
+                        type: integer
+                        minimum: 1
+  /investments/{id}:
+    get:
+      summary: View of an investment with its initial amount and expected balance
+      parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+      responses:
+        400:
+          $ref: "#/components/responses/400BadRequest"
+        404:
+          $ref: "#/components/responses/404NotFound"
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  initial_amount:
+                    type: number
+                    example: 1000
+                  expected_balance:
+                    type: number
+                    example: 1064.22
+components:
+  responses:
+    400BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+    422BadRequest:
+      description: Invalid Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              errors:
+                type: object
+                properties:
+                  field:
+                    type: array
+                    items:
+                      type: string
+    404NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "No query results for model..."
+  schemas:
+    Investment:
+      type: object
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        amount:
+          type: number
+          example: 1000.00
+        withdrawn:
+          type: boolean
+          example: false
+        creation_date:
+          type: string
+          format: date-time
+          example: "2021-06-18T00:00:00.000000Z"
